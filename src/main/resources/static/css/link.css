@@ -1,0 +1,111 @@
+.sq-btn {
+    display: inline-block;
+    position: relative;
+    min-width: 178px;
+    margin: 6px 28px;
+    padding: 15px 40px;
+    font-weight: 800;
+    font-family: sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #0010ff;
+    transition: .15s ease-out;
+    box-sizing: border-box;
+    text-decoration: none;
+    border-radius: 100px;
+}
+
+.btn-one {
+    color: #ff9585;
+}
+
+.sq-btn:last-of-type {
+    margin: 6px 28px;
+    border-radius: 100px;
+}
+
+.sq-btn:before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 0;
+    height: calc(100% + 12px);
+    width: 100%;
+    border: 2px solid #0010ff;
+    box-sizing: border-box;
+    transition: .2s ease-in-out;
+    border-radius: 100px;
+}
+
+.btn-one:before {
+    border: 2px solid #ff9585;
+    border-radius: 100px;
+}
+
+.sq-btn:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -8px;
+    height: 100%;
+    width: calc(100% + 16px);
+    border: 1px solid #400011;
+    box-sizing: border-box;
+    transition: .2s ease-in-out;
+    border-radius: 100px;
+}
+
+.btn-one:after {
+    border: 1px solid #b52914;
+    border-radius: 100px;
+}
+
+.sq-btn:hover:before {
+    top: 0;
+    left: -8px;
+    height: 100%;
+    width: calc(100% + 16px);
+    border-radius: 100px;
+}
+
+.sq-btn:hover:after {
+    top: -6px;
+    left: 0;
+    height: calc(100% + 12px);
+    width: 100%;
+    border-radius: 100px;
+}
+
+* {
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+.button-2 {
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 12px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #450619;
+}
+.button-2 span {
+    position: relative;
+}
+.button-2:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 100%;
+    background: #db98b3;
+    transition: .3s ease-in-out;
+}
+.button-2:hover:before {
+    width: 100%;
+}

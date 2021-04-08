@@ -1,0 +1,92 @@
+.stock-wrap {
+    width: 400px;
+    height: 300px;
+    padding: 20px;
+    margin: 0 auto 0;
+    background: #ffffff;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+    box-sizing: content-box;
+}
+
+.stock-inner {
+    position: relative;
+    height: 100%;
+    background: #8ed1d7;
+    overflow: hidden;
+}
+
+.left {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    line-height: 300px;
+    left: -70px;
+    text-align: center;
+    font-size: 120px;
+    color: rgb(90, 90, 88);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px white,
+    0 0 0 7px #8ed1d7, 0 0 0 8px white,
+    0 0 0 14px #8ed1d7, 0 0 0 15px white,
+    0 0 0 21px #8ed1d7, 0 0 0 22px white,
+    0 0 0 28px #8ed1d7, 0 0 0 29px white,
+    0 0 0 35px #8ed1d7, 0 0 0 36px white,
+    0 0 0 42px #8ed1d7, 0 0 0 43px white,
+    0 0 0 49px #8ed1d7, 0 0 0 50px white,
+    0 0 0 56px #8ed1d7, 0 0 0 57px white,
+    0 0 0 63px #8ed1d7, 0 0 0 64px white,
+    0 0 0 70px #8ed1d7, 0 0 0 71px white,
+    0 0 0 77px #8ed1d7, 0 0 0 78px white,
+    0 0 0 85px #8ed1d7, 0 0 0 86px white;
+}
+
+.right {
+    position: absolute;
+    right: -150px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: white;
+}
+
+.right h3 {
+    position: absolute;
+    height: 50px;
+    top: 125px;
+    margin: 0;
+    padding-left: 30px;
+    font-family: 'Gravitas One', cursive;
+    color: #dda601;
+    font-weight: normal;
+}
+
+.right h3 > span {
+    font-size: 58px;
+    line-height: 1;
+}
+
+.right .text {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 50%;
+    background: #d6a31e;
+    color: #020521;
+    text-align: center;
+    font-family: Arial;
+    font-size: 10px;
+    vertical-align: top;
+}
+
+sup {
+    font-size: 20px;
+    vertical-align: top;
+}
+
+.stock-text {
+    padding: 20px;
+    background: #8ed1d7;
+    color: rgba(255, 255, 255, .8);
+}

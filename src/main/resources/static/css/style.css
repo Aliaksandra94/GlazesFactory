@@ -1,0 +1,44 @@
+body {
+    background: linear-gradient(177deg, #ffffff, #e6d6e7, #ffc1df, #fca7bb);
+    background-size: 800% 800%;
+
+    -webkit-animation: AnimationName 30s ease infinite;
+    -moz-animation: AnimationName 30s ease infinite;
+    animation: AnimationName 30s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+    0%{background-position:42% 0%}
+    50%{background-position:59% 100%}
+    100%{background-position:42% 0%}
+}
+@-moz-keyframes AnimationName {
+    0%{background-position:42% 0%}
+    50%{background-position:59% 100%}
+    100%{background-position:42% 0%}
+}
+@keyframes AnimationName {
+    0%{background-position:42% 0%}
+    50%{background-position:59% 100%}
+    100%{background-position:42% 0%}
+}
+.error{
+    color: darkred;
+}
+.page-title  {
+    font-size:120%;
+    text-align: center;
+    margin:10px 0px;
+}
+.PREPAYMENT {
+    background: #077900;
+    color: #eee1af;
+}
+.POSTPAYMENT {
+    background: #e3cc01;
+    color: #103400;
+}
+.DEBTOR {
+    background: #fa0404;
+    color: #ffffff;
+}
