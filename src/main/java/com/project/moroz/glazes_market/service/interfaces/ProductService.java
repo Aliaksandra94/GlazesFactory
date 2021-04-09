@@ -28,7 +28,7 @@ public interface ProductService {
                                   double productPrice, int quantity,
                                   int productionTime);
 
-    void updateProductQuantity(int orderId);
+    void updateProductQuantity(int orderId, int orderStageId);
 
     Integer returnOrderedProductQuantity(int productId, int orderStageId);
 

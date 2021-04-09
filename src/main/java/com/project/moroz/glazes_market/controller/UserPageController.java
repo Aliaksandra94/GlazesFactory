@@ -29,6 +29,7 @@ public class UserPageController {
     private ProductService productService;
     private OrderStageService orderStageService;
     private GlazesTypeService glazesTypeService;
+    private RawMaterialService rawMaterialService;
     private MessageSource messageSource;
 
     @Autowired
@@ -69,6 +70,11 @@ public class UserPageController {
     @Autowired
     public void setOrderStageService(OrderStageService orderStageService) {
         this.orderStageService = orderStageService;
+    }
+
+    @Autowired
+    public void setRawMaterialService(RawMaterialService rawMaterialService) {
+        this.rawMaterialService = rawMaterialService;
     }
 
     @GetMapping()
@@ -188,13 +194,14 @@ public class UserPageController {
             try {
                 int orderId = Integer.parseInt(request.getParameter("orderId"));
                 if (request.isUserInRole("ROLE_ADMIN")) {
-                        Order foundOrder = orderService.returnById(orderId);
-                        if(foundOrder !=  null){
-                        orders.add(foundOrder);}
+                    Order foundOrder = orderService.returnById(orderId);
+                    if (foundOrder != null) {
+                        orders.add(foundOrder);
+                    }
                 }
                 if (request.isUserInRole("ROLE_SELLER")) {
                     Order foundOrder = orderService.returnById(orderId);
-                    if(foundOrder != null) {
+                    if (foundOrder != null) {
                         if (foundOrder.getUser().getManager().getId() == manager.getId()) {
                             orders.add(foundOrder);
                         }
@@ -345,12 +352,12 @@ public class UserPageController {
                                   @PathVariable("id") int id) {
         Order order = orderService.returnOrderById(id);
         model.addAttribute("order", order);
-        List<OrderItem> orderItems = order.getOrderItems();
-        for (OrderItem orderItem : orderItems) {
-            List<OrderStage> orderStages = orderStageService.returnAllOrderStage();
-            model.addAttribute("orderStages", orderStages);
-        }
+        List<OrderStage> orderStages = orderStageService.returnAvailableOrderStageId(order, request.isUserInRole("ROLE_PRODUCER"), request);
+        model.addAttribute("orderStages", orderStages);
+        model.addAttribute("enoughRaw", rawMaterialService.isEnoughRaw(order.getOrderItems()));
+        model.addAttribute("notEnoughRaw", rawMaterialService.returnRawMaterialsAreNotEnough(order.getOrderItems()));
         return "users/orderDetails";
+
     }
 
     @PostMapping("/orderHistory/orderDetails")
@@ -358,11 +365,7 @@ public class UserPageController {
             order,
                                      @RequestParam("orderId") int orderId,
                                      @RequestParam("orderStagedId") int orderStageId) {
-        Order orderForUpdate = orderService.returnOrderById(orderId);
-        orderForUpdate.setOrderStage(orderStageService.returnOrderStageById(orderStageId));
-        productService.updateProductQuantity(orderId);
+        productService.updateProductQuantity(orderId, orderStageId);
         return getOrdersList(request, model);
     }
-
-
 }

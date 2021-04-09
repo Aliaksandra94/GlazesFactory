@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface RawMaterialDAO extends JpaRepository<RawMaterial, Integer> {
     List<RawMaterial> findByCategoryId(int categoryId);
+    RawMaterial findByRawMaterialID(int id);
 }

@@ -1,8 +1,6 @@
 package com.project.moroz.glazes_market.service;
 
-import com.project.moroz.glazes_market.entity.Product;
-import com.project.moroz.glazes_market.entity.RawMaterial;
-import com.project.moroz.glazes_market.entity.RawMaterialItem;
+import com.project.moroz.glazes_market.entity.*;
 import com.project.moroz.glazes_market.repository.ProductDAO;
 import com.project.moroz.glazes_market.repository.RawMaterialDAO;
 import com.project.moroz.glazes_market.repository.RawMaterialItemDAO;
@@ -51,6 +49,11 @@ public class RawMaterialServiceImpl implements RawMaterialService {
     @Override
     public List<RawMaterial> returnAllRawMaterialsByCategoryId(int categoryId) {
         return rawMaterialDAO.findByCategoryId(categoryId);
+    }
+
+    @Override
+    public RawMaterial returnRawMaterialById(int id) {
+        return rawMaterialDAO.findByRawMaterialID(id);
     }
 
     @Override
@@ -117,5 +120,115 @@ public class RawMaterialServiceImpl implements RawMaterialService {
             }
         }
         return rawMaterialDoubleMap;
+    }
+
+    @Override
+    public Map<RawMaterial, Double> returnRawMaterialsAndQuantitiesNeedsForProduceProducts(List<OrderItem> orderItems) {
+        Map<RawMaterial, Double> rawMaterialDoubleMap = new HashMap<>();
+        List<RawMaterial> rawMaterials = new ArrayList<>();
+        for (OrderItem orderItem : orderItems) {
+            List<RawMaterialItem> currentRawMaterialItems = orderItem.getProduct().getGlazesType().getRawMaterialItems();
+            for (RawMaterialItem rawMaterialItem : currentRawMaterialItems) {
+                RawMaterial rawMaterial = null;
+                double quantity = 0;
+                if (rawMaterials.isEmpty()) {
+                    rawMaterial = rawMaterialItem.getRawMaterial();
+                    rawMaterials.add(rawMaterial);
+                    quantity = currentRawMaterialItems.get(0).getQuantity() * orderItem.getQuantity();
+                } else {
+                    if (rawMaterials.contains(rawMaterialItem.getRawMaterial())) {
+                        for (Map.Entry<RawMaterial, Double> item : rawMaterialDoubleMap.entrySet()) {
+                            if (item.getKey().getRawMaterialID() != rawMaterialItem.getRawMaterial().getRawMaterialID()) {
+                                continue;
+                            } else {
+                                rawMaterial = item.getKey();
+                                quantity = item.getValue() + rawMaterialItem.getQuantity() * orderItem.getQuantity();
+                            }
+                        }
+                    } else {
+                        rawMaterial = rawMaterialItem.getRawMaterial();
+                        rawMaterials.add(rawMaterial);
+                        quantity = rawMaterialItem.getQuantity() * orderItem.getQuantity();
+                    }
+                }
+                if (rawMaterialDoubleMap.isEmpty()) {
+                    rawMaterialDoubleMap.put(rawMaterial, quantity);
+                } else {
+                    for (Map.Entry<RawMaterial, Double> item : rawMaterialDoubleMap.entrySet()) {
+                        if (item.getKey().equals(rawMaterial)) {
+                            rawMaterialDoubleMap.replace(rawMaterialItem.getRawMaterial(), item.getValue(), quantity);
+                            break;
+                        } else {
+                            continue;
+                        }
+                    }
+                    if (rawMaterialDoubleMap.containsKey(rawMaterial)) {
+                        continue;
+                    } else {
+                        rawMaterialDoubleMap.put(rawMaterial, quantity);
+                    }
+                }
+            }
+        }
+        return rawMaterialDoubleMap;
+    }
+
+    @Override
+    public boolean isEnoughRaw(List<OrderItem> orderItems) {
+        boolean isEnoughRaw = true;
+        List<RawMaterial> rawMaterials = new ArrayList<>();
+        for (Map.Entry<RawMaterial, Double> currentItem : returnRawMaterialsAreNotEnough(orderItems).entrySet()) {
+            rawMaterials.add(currentItem.getKey());
+        }
+        int size = rawMaterials.size();
+        if (size >= 1) {
+            isEnoughRaw = false;
+        } else {
+            isEnoughRaw = true;
+        }
+        return isEnoughRaw;
+    }
+
+    @Override
+    public Map<RawMaterial, Double> returnRawMaterialsAreNotEnough(List<OrderItem> orderItems) {
+        Map<RawMaterial, Double> listOfRawWhichNotEnough = new HashMap<>();
+        Map<RawMaterial, Double> currentOrder = returnRawMaterialsAndQuantitiesNeedsForProduceProducts(orderItems);
+        List<Product> products = new ArrayList<>();
+        for (OrderItem orderItem : orderItems) {
+            products.add(orderItem.getProduct());
+        }
+        Map<RawMaterial, Double> otherOrders = returnRawMaterialsAndQuantitiesForProductInProcess(products);
+        for (Map.Entry<RawMaterial, Double> currentItem : currentOrder.entrySet()) {
+            for (Map.Entry<RawMaterial, Double> otherItem : otherOrders.entrySet()) {
+                if (currentItem.getKey().equals(otherItem.getKey())) {
+                    if ((currentItem.getKey().getQuantity() - otherItem.getValue()) <= 0) {
+                        listOfRawWhichNotEnough.put(currentItem.getKey(), currentItem.getKey().getQuantity() - otherItem.getValue());
+                    } else {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            }
+        }
+        return listOfRawWhichNotEnough;
+    }
+
+    @Override
+    public double returnRawMaterialQuantityAreNotEnough(int rawId, Order order) {
+        double quantity = 0;
+        Map<RawMaterial, Double> listOfRawWhichNotEnough = returnRawMaterialsAreNotEnough(order.getOrderItems());
+        for (Map.Entry<RawMaterial, Double> item : listOfRawWhichNotEnough.entrySet()) {
+            if (item.getKey().getRawMaterialID() == rawId) {
+                quantity = item.getValue();
+            }
+        }
+        return quantity;
+    }
+
+    @Override
+    public void updateRawMaterialQuantity(int rawId, int quantity) {
+        RawMaterial rawMaterial = rawMaterialDAO.findByRawMaterialID(rawId);
+        rawMaterial.setQuantity(quantity);
     }
 }

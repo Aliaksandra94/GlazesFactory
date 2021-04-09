@@ -2,10 +2,7 @@ package com.project.moroz.glazes_market.service;
 
 
 import com.project.moroz.glazes_market.entity.*;
-import com.project.moroz.glazes_market.repository.GlazesTypeDAO;
-import com.project.moroz.glazes_market.repository.OrderDAO;
-import com.project.moroz.glazes_market.repository.OrderItemDAO;
-import com.project.moroz.glazes_market.repository.ProductDAO;
+import com.project.moroz.glazes_market.repository.*;
 import com.project.moroz.glazes_market.service.interfaces.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +19,7 @@ public class ProductServiceImpl implements ProductService {
     private GlazesTypeDAO glazesTypeDAO;
     private OrderDAO orderDAO;
     private OrderItemDAO orderItemDAO;
+    private OrderStageDAO orderStageDAO;
 
     @Autowired
     public void setOrderItemDAO(OrderItemDAO orderItemDAO) {
@@ -41,6 +39,11 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     public void setOrderDAO(OrderDAO orderDAO) {
         this.orderDAO = orderDAO;
+    }
+
+    @Autowired
+    public void setOrderStageDAO(OrderStageDAO orderStageDAO) {
+        this.orderStageDAO = orderStageDAO;
     }
 
     @Override
@@ -69,17 +72,12 @@ public class ProductServiceImpl implements ProductService {
         GlazesType glazesType = product.getGlazesType();
         List<RawMaterialItem> rawMaterialItems = glazesType.getRawMaterialItems();
         for (RawMaterialItem rawMaterialItem : rawMaterialItems) {
-            rawMaterialItem.getRawMaterial().setQuantity(rawMaterialItem.getRawMaterial().getQuantity() - (rawMaterialItem.getQuantity() * product.getQuantity()));
+
+            rawMaterialItem.getRawMaterial().setQuantity(rawMaterialItem.getRawMaterial().getQuantity() - (rawMaterialItem.getQuantity() * quantity));
         }
         product.setQuantity(quantity);
         productDAO.save(product);
     }
-
-//    @Override
-//    @Transactional
-//    public void saveProduct(Product product) {
-//        productDAO.save(product);
-//    }
 
     @Override
     public void setGlazesType(int productId, int typeId) {
@@ -141,17 +139,20 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void updateProductQuantity(int orderId) {
+    public void updateProductQuantity(int orderId, int orderStageId) {
         Order order = orderDAO.getOne(orderId);
-        List<OrderItem> orderItemList = new ArrayList<>();
-        for (OrderItem orderItem : order.getOrderItems()) {
-            orderItemList.add(orderItem);
-        }
-        for (OrderItem orderItem : orderItemList) {
-            Product product = orderItem.getProduct();
-            int newQuantity = product.getQuantity() - orderItem.getQuantity();
-            product.setQuantity(newQuantity);
-            productDAO.save(product);
+        order.setOrderStage(orderStageDAO.getOne(orderStageId));
+        if (order.getOrderStage().getOrderStageID() == 1) {
+            List<OrderItem> orderItemList = new ArrayList<>();
+            for (OrderItem orderItem : order.getOrderItems()) {
+                orderItemList.add(orderItem);
+            }
+            for (OrderItem orderItem : orderItemList) {
+                Product product = orderItem.getProduct();
+                int newQuantity = product.getQuantity() - orderItem.getQuantity();
+                product.setQuantity(newQuantity);
+                productDAO.save(product);
+            }
         }
     }
 
@@ -175,31 +176,31 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Map<Product, List<Double>> returnProductWithQuantities(List<Product> products) {
         Map<Product, List<Double>> productWithAmountAndQuantities = new HashMap<>();
-        for (Product product: products){
+        for (Product product : products) {
             List<Double> quantitiesAndAmount = new ArrayList<>();
             Integer readyQuantity = orderItemDAO.getReadyQuantityOfTheProductByProductId(product.getId(), 1);
-            if (readyQuantity == null){
+            if (readyQuantity == null) {
                 quantitiesAndAmount.add(0.00);
             } else {
-                quantitiesAndAmount.add((double)readyQuantity);
+                quantitiesAndAmount.add((double) readyQuantity);
             }
             Double readyAVGPrice = orderItemDAO.getReadyAmountOfTheProductByProductId(product.getId(), 1);
-            if(readyAVGPrice == null){
+            if (readyAVGPrice == null) {
                 quantitiesAndAmount.add(0.00);
             } else {
                 quantitiesAndAmount.add(readyAVGPrice);
             }
             Integer orderedQuantity = orderItemDAO.getOrderedQuantityOfTheProductByProductId(product.getId(), 1);
-            if (orderedQuantity == null){
+            if (orderedQuantity == null) {
                 quantitiesAndAmount.add(0.00);
             } else {
-                quantitiesAndAmount.add((double)orderedQuantity);
+                quantitiesAndAmount.add((double) orderedQuantity);
             }
             Double orderedAVRPrice = orderItemDAO.getOrderedAmountOfTheProductByProductId(product.getId(), 1);
-            if (orderedAVRPrice == null){
+            if (orderedAVRPrice == null) {
                 quantitiesAndAmount.add(0.00);
             } else {
-                quantitiesAndAmount.add((double)orderedAVRPrice);
+                quantitiesAndAmount.add((double) orderedAVRPrice);
             }
             productWithAmountAndQuantities.put(product, quantitiesAndAmount);
         }
