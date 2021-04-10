@@ -121,7 +121,6 @@ public class CatalogController {
 
     @GetMapping("/create")
     public String createCustomRecipePage(Model model, @ModelAttribute("product") Product product) {
-
         List glazesTypeList = glazesTypeService.returnAllGlazesType();
         model.addAttribute("glazesType", glazesTypeList);
         return "products/addProductPage";

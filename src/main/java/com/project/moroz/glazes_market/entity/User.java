@@ -33,7 +33,7 @@ public class User implements UserDetails, Serializable {
     private String login;
 
     @Column(name = "password")
-    @NotEmpty(message = "Age shouldn't be empty")
+    @NotEmpty(message = "Password shouldn't be empty")
     //@Size(min = 3, max = 10, message = "Pass should be between 3 and 15 characters.")
     private String password;
 

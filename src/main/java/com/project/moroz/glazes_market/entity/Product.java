@@ -24,7 +24,7 @@ public class Product {
     @Max(value = 10000, message = "Price's length should be less than 5 characters")
     private double price;
 
-    //@Min(value = 1, message = "Quantity should be more than 0 and should be integer.")
+    @Min(value = 0, message = "Quantity should be not less than 0 and should be integer.")
     private int quantity;
 
     @Column(name = "production_time")
