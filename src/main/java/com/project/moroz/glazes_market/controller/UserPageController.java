@@ -258,7 +258,7 @@ public class UserPageController {
                 }
             }
         }
-        if (orders.size() == 0 || orders == null || orders.isEmpty()) {
+        if (orders.size() == 0 || orders.isEmpty()) {
             String emptyMessage = messageSource.getMessage("ordersNotFound.message", new Object[]{"ordersNotFound.message"}, LocaleContextHolder.getLocale());
             model.addAttribute("msg", emptyMessage);
         }
@@ -352,7 +352,12 @@ public class UserPageController {
                                   @PathVariable("id") int id) {
         Order order = orderService.returnOrderById(id);
         model.addAttribute("order", order);
-        List<OrderStage> orderStages = orderStageService.returnAvailableOrderStageId(order, request.isUserInRole("ROLE_PRODUCER"), request);
+        List<OrderStage> orderStages;
+        if (request.isUserInRole("ROLE_USER")) {
+            orderStages = orderStageService.returnAllOrderStage();
+        } else {
+            orderStages = orderStageService.returnAvailableOrderStageId(order, request.isUserInRole("ROLE_PRODUCER"), request);
+        }
         model.addAttribute("orderStages", orderStages);
         model.addAttribute("enoughRaw", rawMaterialService.isEnoughRaw(order.getOrderItems()));
         model.addAttribute("notEnoughRaw", rawMaterialService.returnRawMaterialsAreNotEnough(order.getOrderItems()));
