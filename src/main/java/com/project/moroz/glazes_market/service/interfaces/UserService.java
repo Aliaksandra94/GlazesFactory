@@ -22,7 +22,7 @@ public interface UserService extends UserDetailsService {
 
     void saveUserWithoutPasswordEncode(User user);
 
-    void deleteUser(User user);
+    void deleteUser(int id);
 
     void setRoleManagerSolvency(int userId, int managerID,
                                 int solvencyID);

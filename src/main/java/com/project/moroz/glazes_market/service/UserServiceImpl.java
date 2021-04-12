@@ -5,6 +5,7 @@ import com.project.moroz.glazes_market.form.UserForm;
 import com.project.moroz.glazes_market.repository.*;
 import com.project.moroz.glazes_market.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -85,11 +86,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(User user) {
+    public void deleteUser(int id) {
+        User user = userDAO.getOne(id);
         user.getRoles().clear();
         user.setManager(null);
         user.setSolvency(null);
-        userDAO.delete(user);
+        userDAO.deleteUserById(user.getId());
     }
 
     @Override

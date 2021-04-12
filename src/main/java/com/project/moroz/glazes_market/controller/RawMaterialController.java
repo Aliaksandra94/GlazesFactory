@@ -1,7 +1,5 @@
 package com.project.moroz.glazes_market.controller;
 
-import com.project.moroz.glazes_market.entity.OrderItem;
-import com.project.moroz.glazes_market.entity.Product;
 import com.project.moroz.glazes_market.entity.RawMaterial;
 import com.project.moroz.glazes_market.service.interfaces.OrderService;
 import com.project.moroz.glazes_market.service.interfaces.RawMaterialService;
@@ -9,11 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/userPage/actionWithRawMaterial")

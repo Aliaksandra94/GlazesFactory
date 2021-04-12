@@ -11,8 +11,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME) //доступ после компиляции
 @Target({ElementType.FIELD}) //применение на поле
 public @interface UniqueLogin {
-    public String message() default "There is already user with this login!";
-
+    //public String message() default "{duplicate.customerForm.name}";
+    public String message() default "User with such login already exist.";
     public Class<?>[] groups() default {};
 
     public Class<? extends Payload>[] payload() default{};

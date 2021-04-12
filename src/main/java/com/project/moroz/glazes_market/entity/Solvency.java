@@ -17,7 +17,7 @@ public class Solvency {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "solvency", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "solvency")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<User> users;
 

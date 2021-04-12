@@ -1,7 +1,5 @@
 package com.project.moroz.glazes_market.entity;
 
-import com.project.moroz.glazes_market.entity.annotation.UniqueLogin;
-import com.project.moroz.glazes_market.entity.annotation.UniqueLoginManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

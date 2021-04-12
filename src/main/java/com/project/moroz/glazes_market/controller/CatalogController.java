@@ -3,6 +3,7 @@ package com.project.moroz.glazes_market.controller;
 import com.project.moroz.glazes_market.entity.*;
 import com.project.moroz.glazes_market.service.interfaces.*;
 import com.project.moroz.glazes_market.utils.Utils;
+import com.project.moroz.glazes_market.validator.FormErrorMessage;
 import org.apache.commons.math3.util.Precision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -20,14 +21,12 @@ import java.util.*;
 @Controller
 @RequestMapping("/catalog")
 public class CatalogController {
-    private BasketService basketService;
     private ProductService productService;
     private GlazesTypeService glazesTypeService;
-    private BasketItemService basketItemService;
-    private UserService userService;
     private ManagerService managerService;
     private MessageSource messageSource;
     private OrderService orderService;
+    private FormErrorMessage formErrorMessage;
 
     @Autowired
     public void setManagerService(ManagerService managerService) {
@@ -45,11 +44,6 @@ public class CatalogController {
     }
 
     @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
-
-    @Autowired
     public void setProductService(ProductService productService) {
         this.productService = productService;
     }
@@ -60,13 +54,8 @@ public class CatalogController {
     }
 
     @Autowired
-    public void setBasketService(BasketService basketService) {
-        this.basketService = basketService;
-    }
-
-    @Autowired
-    public void setBasketItemService(BasketItemService basketItemService) {
-        this.basketItemService = basketItemService;
+    public void setFormErrorMessage(FormErrorMessage formErrorMessage) {
+        this.formErrorMessage = formErrorMessage;
     }
 
     @GetMapping
@@ -129,25 +118,37 @@ public class CatalogController {
     @PostMapping("/create")
     public String createProduct(HttpServletRequest request, Model model,
                                 @RequestParam(value = "name") String name,
-                                @RequestParam(value = "typeID") int glazesType,
+                                @RequestParam(value = "typeID") @Valid int glazesType,
                                 @RequestParam(value = "colorId") String colorId,
-                                @RequestParam(value = "quantity") int quantity,
-                                @ModelAttribute("product") Product product) {
-        model.addAttribute("product", product);
-        if (name == null || name.equals("")) {
-            List glazesTypeList = glazesTypeService.returnAllGlazesType();
-            model.addAttribute("glazesType", glazesTypeList);
-            String errorMessage = messageSource.getMessage("error.emptyName", new Object[]{"error.emptyName"}, LocaleContextHolder.getLocale());
-            model.addAttribute("msg", errorMessage);
+                                @ModelAttribute("product") Product product, BindingResult result) {
+        int quantity = -1;
+        try {
+            String number = request.getParameter("quantity");
+            quantity = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+        }
+        if (result.hasErrors()) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+        }
+        String fieldProductName = formErrorMessage.checkFieldProductName(request.getParameter("name"));
+        model.addAttribute("fieldProductName", fieldProductName);
+        String fieldProductQuantity = formErrorMessage.checkFieldProductQuantity("quantity", quantity);
+        model.addAttribute("fieldProductQuantity", fieldProductQuantity);
+        if (!formErrorMessage.checkCreateProductFormValid(fieldProductName, fieldProductQuantity)) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+            return "products/addProductPage";
+        }
+        if (!formErrorMessage.checkCreateProductFormValid(fieldProductName, fieldProductQuantity)) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
             return "products/addProductPage";
         }
         GlazesType glazesType1 = glazesTypeService.returnGlazesTypeById(glazesType);
         String description = colorId + " " + glazesType1.getName().toLowerCase() + " glazes";
         Double price = Precision.round(glazesType1.getCost() * 1.3, 2);
         Product product2 = new Product(name, description, price, quantity, 5, glazesType1.getCost(), glazesType1);
+        model.addAttribute("product", product);
         model.addAttribute("product", product2);
-        User user = Utils.getUserInSession(request);
-        model.addAttribute("user", user);
         return "products/checkPrice";
     }
 
@@ -263,8 +264,6 @@ public class CatalogController {
 
     @GetMapping("/getOrders/{id}")
     public String getOrders(HttpServletRequest request, Model model, @PathVariable("id") int id) {
-//        Product product = productService.returnProductById(id);
-//        model.addAttribute("product", product);
         List<Order> orders = orderService.returnOrdersIncludeProduct(id);
         model.addAttribute("orders", orders);
         User user = Utils.getUserInSession(request);
@@ -272,8 +271,6 @@ public class CatalogController {
         Set<Role> role = manager.getRoles();
         model.addAttribute("manager", manager);
         model.addAttribute("roles", role);
-//        List glazesTypeList = glazesTypeService.returnAllGlazesType();
-//        model.addAttribute("glazesType", glazesTypeList);
         return "products/orders";
     }
 
@@ -310,8 +307,6 @@ public class CatalogController {
 
     @GetMapping("/getRawMaterials/{id}")
     public String getRawMaterialsPage(HttpServletRequest request, Model model, @PathVariable("id") int id) {
-//        User user = Utils.getUserInSession(request);
-//        Manager manager = managerService.returnManagerByLogin(user.getLogin());
         GlazesType glazesType = glazesTypeService.returnGlazesTypeById(id);
         model.addAttribute("glazesType", glazesType);
         return "products/productRawMaterials";

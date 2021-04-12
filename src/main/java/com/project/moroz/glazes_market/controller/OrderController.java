@@ -44,7 +44,6 @@ public class OrderController {
         return "users/orderPage";
     }
 
-
     @PostMapping
     public String orderConfirm(HttpServletRequest request, Model model) {
         Basket basket = Utils.getBasketInSession(request);

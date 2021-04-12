@@ -24,7 +24,6 @@ import java.util.List;
 public class ManagersController {
     private ManagerService managerService;
     private RoleService roleService;
-    private OrderService orderService;
     private MessageSource messageSource;
 
     @Autowired
@@ -42,14 +41,9 @@ public class ManagersController {
         this.managerService = managerService;
     }
 
-    @Autowired
-    public void setOrderService(OrderService orderService) {
-        this.orderService = orderService;
-    }
-
     @GetMapping
     public String getManagersListPage(Model model, HttpServletRequest request) {
-        List<Manager> managers = managerService.returnAllManagers();
+        List<Manager> managers = managerService.returnAllManagersWithoutAdmin();
         model.addAttribute("managers", managers);
         return "managers/managersListPage";
     }

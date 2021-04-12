@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
@@ -33,12 +34,11 @@
         <form:input path="quantity" type="number" readonly="true"/>
 
         <label><spring:message code="productPriceWithUserDiscount.addProduct"/></label>
-        <input readonly value="${product.quantity*(product.price-product.price*user.discount/100)}">
-
+        <input readonly hidden value="${product.quantity*(product.price-product.price*user.discount/100)}">
         <form:label path="productionTime"><spring:message code="productTimeProduction.addProduct"/></form:label>
         <form:input path="productionTime" type="number" readonly="true"/>
         <a href="/catalog/create" class="sq-btn btn-one"><spring:message code="backAndTryAgain"/></a>
-            <spring:message code="actionWithProduct.createProduct" var="add"/>
+        <spring:message code="actionWithProduct.createProduct" var="add"/>
         <input type="submit" value="${add}">
     </div>
 </form:form>

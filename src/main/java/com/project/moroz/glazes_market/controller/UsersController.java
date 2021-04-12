@@ -1,7 +1,6 @@
 package com.project.moroz.glazes_market.controller;
 
 import com.project.moroz.glazes_market.entity.*;
-import com.project.moroz.glazes_market.service.UserServiceImpl;
 import com.project.moroz.glazes_market.service.interfaces.ManagerService;
 import com.project.moroz.glazes_market.service.interfaces.RoleService;
 import com.project.moroz.glazes_market.service.interfaces.SolvencyService;
@@ -9,7 +8,6 @@ import com.project.moroz.glazes_market.service.interfaces.UserService;
 import com.project.moroz.glazes_market.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,8 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping("/users")
@@ -28,8 +24,6 @@ public class UsersController {
     private UserService userService;
     private ManagerService managerService;
     private SolvencyService solvencyService;
-    private RoleService roleService;
-    private MessageSource messageSource;
 
     @Autowired
     public void setUserService(UserService userService) {
@@ -46,15 +40,6 @@ public class UsersController {
         this.solvencyService = solvencyService;
     }
 
-    @Autowired
-    public void setRoleService(RoleService roleService) {
-        this.roleService = roleService;
-    }
-
-    @Autowired
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
 
     @GetMapping
     public String getUsersListPage(Model model, HttpServletRequest request) {
@@ -102,15 +87,13 @@ public class UsersController {
         }
         userService.saveUserWithoutPasswordEncode(user);
         userService.setRoleManagerSolvency(user.getId(), managerID, solvencyID);
-        userService.saveUser(user);
         return "redirect:/users";
     }
 
 
     @GetMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") int id) {
-        User user = userService.returnUserById(id);
-        userService.deleteUser(user);
+        userService.deleteUser(id);
         return "redirect:/users";
     }
 

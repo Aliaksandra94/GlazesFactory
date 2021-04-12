@@ -1,8 +1,6 @@
 package com.project.moroz.glazes_market.entity;
 
 import com.project.moroz.glazes_market.entity.annotation.UniqueLogin;
-import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,7 +31,7 @@ public class User implements UserDetails, Serializable {
     private String login;
 
     @Column(name = "password")
-    @NotEmpty(message = "Password shouldn't be empty")
+    @NotEmpty(message = "Age shouldn't be empty")
     //@Size(min = 3, max = 10, message = "Pass should be between 3 and 15 characters.")
     private String password;
 

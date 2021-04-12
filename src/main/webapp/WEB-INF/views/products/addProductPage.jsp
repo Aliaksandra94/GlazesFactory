@@ -23,7 +23,7 @@
         </sec:authorize>
         <form:label path="name"><spring:message code="productName.addProduct"/></form:label>
         <form:input path="name"/>
-        <div style="color: red">${msg}</div>
+        <div style="color: red">${fieldProductName}</div>
         <form:errors path="name" cssClass="error"/>
 
         <sec:authorize access="hasRole('USER')">
@@ -76,7 +76,8 @@
         </sec:authorize>
         <form:label path="quantity"><spring:message code="productQuantity.addProduct"/></form:label>
         <input name="quantity">
-        <form:errors path="quantity" cssClass="error"/>
+        <div style="color: red">${fieldProductQuantity}</div>
+
         <sec:authorize access="isAuthenticated() && hasAnyRole('ADMIN', 'PRODUCER')">
             <form:label path="productionTime"><spring:message code="productTimeProduction.addProduct"/></form:label>
             <form:input path="productionTime"/>
