@@ -17,7 +17,7 @@
 <c:url value="/userPage/reports/onManagers" var="findByNameOrLogin"/>
 <form:form action="${findByNameOrLogin}">
     <input type="hidden" name="form" value="findByNameOrLogin"/>
-    <label style="color: #450619"><spring:message code="findByNameOrLogin"/></label>
+    <label style="color: #450619"><spring:message code="findManagerByNameOrLogin"/></label>
     <input name="name" required>
     <button type="submit" style="border: none; background: none"><img src="/images/search.png" width="30px"
                                                                       height="30px" alt="Find" border="0px">
