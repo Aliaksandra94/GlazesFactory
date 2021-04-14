@@ -17,7 +17,7 @@
         <input type="hidden" name="id" value="${product.id}">
         <form:label path="name"><spring:message code="productName.addProduct"/></form:label>
         <form:input path="name"/>
-        <form:errors path="name" cssClass="error"/>
+        <div style="color: red">${fieldProductName}</div>
         <br><br>
         <sec:authorize access="hasRole('SELLER')">
             <form:label path="glazesType"><spring:message code="productType.addProduct"/></form:label>
@@ -45,11 +45,11 @@
 
         <form:label path="description"><spring:message code="productDescription.addProduct"/></form:label>
         <form:input path="description"/>
-        <form:errors path="description" cssClass="error"/>
+        <div style="color: red">${fieldProductDescription}</div>
 
         <form:label path="price"><spring:message code="productPrice.addProduct"/></form:label>
         <form:input path="price"/>
-        <form:errors path="price" cssClass="error"/>
+        <div style="color: red">${fieldProductPrice}</div>
         <sec:authorize access="hasRole('SELLER')">
         <form:label path="glazesType.cost"><spring:message code="productPrice.addProduct"/></form:label>
         <form:input path="glazesType.cost" readonly="true"/>
@@ -59,18 +59,18 @@
 <sec:authorize access="hasRole('SELLER')">
         <form:label path="quantity"><spring:message code="productQuantity.addProduct"/></form:label>
         <form:input path="quantity" readonly="true"/>
-        <form:errors path="quantity" cssClass="error"/>
+    <div style="color: red">${fieldProductQuantity}</div>
         <form:label path="productionTime"><spring:message code="productTimeProduction.addProduct"/></form:label>
         <form:input path="productionTime" readonly="true"/>
-        <form:errors path="productionTime" cssClass="error"/>
+    <div style="color: red">${fieldProductTime}</div>
 </sec:authorize>
         <sec:authorize access="hasRole('ADMIN') || hasRole('PRODUCER')">
             <form:label path="quantity"><spring:message code="productQuantity.addProduct"/></form:label>
-            <form:input path="quantity" readonly="true"/>
-            <form:errors path="quantity" cssClass="error"/>
+            <form:input path="quantity"/>
+            <div style="color: red">${fieldProductQuantity}</div>
             <form:label path="productionTime"><spring:message code="productTimeProduction.addProduct"/></form:label>
             <form:input path="productionTime"/>
-            <form:errors path="productionTime" cssClass="error"/>
+            <div style="color: red">${fieldProductTime}</div>
         </sec:authorize>
         <spring:message code="actionWithProduct.editProduct" var="edit"/>
         <input type="submit" value="${edit}">

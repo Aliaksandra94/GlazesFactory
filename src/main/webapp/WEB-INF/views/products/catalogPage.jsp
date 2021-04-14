@@ -127,22 +127,22 @@
                              width="40px" height="40px"></a>
                 </sec:authorize>
                 <sec:authorize access="hasAnyRole('ADMIN', 'PRODUCER', 'SELLER')">
-                    <c:if test="${((product.price/product.glazesType.cost)<=1.1) || (orderedQuantity.get(product.id) <= 0 && hasOrders==false)}">
+                    <c:if test="${((product.price/product.glazesType.cost)<=1.1) || (orderedQuantity.get(product.id) <= 0 || hasOrders==false)}">
                         <a title="update" href="/catalog/edit/${product.id}"><img
                                 src="/images/edit_product.png" width="40px" height="40px" class="table_blur"></a>
                     </c:if>
-                    <c:if test="${(orderedQuantity.get(product.id) > 0 || hasOrders==true) && (product.price/product.glazesType.cost)>1.1}">
+                    <c:if test="${(orderedQuantity.get(product.id) > 0 && hasOrders==true) && (product.price/product.glazesType.cost)>1.1}">
                         <spring:message code="messageChangerProduct.catalogPage"/>
                     </c:if>
                 </sec:authorize>
 
                 <sec:authorize access="hasRole('ADMIN')">
-                    <c:if test="${orderedQuantity.get(product.id) <= 0 && hasOrders==false}">
+                    <c:if test="${orderedQuantity.get(product.id) <= 0 || hasOrders==false}">
                         <a title="delete" href="/catalog/delete/${product.id}"><img src="/images/delete_product.png"
                                                                                     width="40px" height="40px"
                                                                                     class="table_blur"></a>
                     </c:if>
-                    <c:if test="${orderedQuantity.get(product.id) > 0 || hasOrders==true}">
+                    <c:if test="${orderedQuantity.get(product.id) > 0 && hasOrders==true}">
                         <spring:message code="messageDeleteProduct.catalogPage"/>
                     </c:if>
                 </sec:authorize>

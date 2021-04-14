@@ -174,14 +174,48 @@ public class CatalogController {
     }
 
     @PostMapping("/add")
-    public String addProduct(Model model,
-                             @RequestParam(value = "typeID") @Valid int glazesType,
-                             @ModelAttribute("product") @Valid Product product,
+    public String addProduct(HttpServletRequest request, Model model,
+                             @RequestParam(value = "typeID") int glazesType,
+                             @ModelAttribute("product") Product product,
                              BindingResult bindingResult) {
-        model.addAttribute("product", product);
+        int quantity = -1;
+        try {
+            String number = request.getParameter("quantity");
+            quantity = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+        }
+        double price = -1;
+        try {
+            String number2 = request.getParameter("price");
+            price = Double.parseDouble(number2);
+        } catch (NumberFormatException e) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+        }
+        int time = -1;
+        try {
+            String number3 = request.getParameter("productionTime");
+            time = Integer.parseInt(number3);
+        } catch (NumberFormatException e) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+        }
+        String fieldProductName = formErrorMessage.checkFieldProductName(request.getParameter("name"));
+        model.addAttribute("fieldProductName", fieldProductName);
+        String fieldProductQuantity = formErrorMessage.checkFieldProductQuantity("quantity", quantity);
+        model.addAttribute("fieldProductQuantity", fieldProductQuantity);
+        String fieldProductDescription = formErrorMessage.checkFieldProductDescription("description");
+        model.addAttribute("fieldProductDescription", fieldProductDescription);
+        String fieldProductPrice = formErrorMessage.checkFieldProductPrice("price", price);
+        model.addAttribute("fieldProductPrice", fieldProductPrice);
+        String fieldProductTime = formErrorMessage.checkFieldProductTimeOfProduction("productionTime", time);
+        model.addAttribute("fieldProductTime", fieldProductTime);
+        if (!formErrorMessage.checkAddProductFormValid(fieldProductName, fieldProductQuantity, fieldProductDescription,
+                fieldProductPrice, fieldProductTime)) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+            return "products/addProductPage";
+        }
         if (bindingResult.hasErrors()) {
-            List glazesTypeList = glazesTypeService.returnAllGlazesType();
-            model.addAttribute("glazesType", glazesTypeList);
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
             return "products/addProductPage";
         }
         productService.saveProductWithGlazeType(product, glazesType);
@@ -214,21 +248,52 @@ public class CatalogController {
     }
 
     @PostMapping("/edit")
-    public String editProduct(HttpServletRequest request, Model model, @ModelAttribute("product") @Valid Product product,
+    public String editProduct(HttpServletRequest request, Model model, @ModelAttribute("product") Product product,
                               BindingResult bindingResult,
                               @RequestParam("id") int productId, @RequestParam("name") String productName,
-                              @RequestParam("typeID") int glazesType, @RequestParam("description") String description,
-                              @RequestParam("price") double productPrice, @RequestParam("quantity") int quantity,
-                              @RequestParam("productionTime") int productionTime) {
+                              @RequestParam("typeID") int glazesType, @RequestParam("description") String description) {
         model.addAttribute("product", product);
-        if (!request.isUserInRole("ROLE_SELLER")) {
-            if (bindingResult.hasErrors()) {
-                List glazesTypeList = glazesTypeService.returnAllGlazesType();
-                model.addAttribute("glazesType", glazesTypeList);
-                return "products/editProductPage";
-            }
+        int quantity = -1;
+        try {
+            String number = request.getParameter("quantity");
+            quantity = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
         }
-        productService.updateProductWithNewData(productId, productName, glazesType, description, productPrice, quantity, productionTime);
+        double price = -1;
+        try {
+            String number2 = request.getParameter("price");
+            price = Double.parseDouble(number2);
+        } catch (NumberFormatException e) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+        }
+        int time = -1;
+        try {
+            String number3 = request.getParameter("productionTime");
+            time = Integer.parseInt(number3);
+        } catch (NumberFormatException e) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+        }
+        String fieldProductName = formErrorMessage.checkFieldProductName(request.getParameter("name"));
+        model.addAttribute("fieldProductName", fieldProductName);
+        String fieldProductQuantity = formErrorMessage.checkFieldProductQuantity("quantity", quantity);
+        model.addAttribute("fieldProductQuantity", fieldProductQuantity);
+        String fieldProductDescription = formErrorMessage.checkFieldProductDescription("description");
+        model.addAttribute("fieldProductDescription", fieldProductDescription);
+        String fieldProductPrice = formErrorMessage.checkFieldProductPrice("price", price);
+        model.addAttribute("fieldProductPrice", fieldProductPrice);
+        String fieldProductTime = formErrorMessage.checkFieldProductTimeOfProduction("productionTime", time);
+        model.addAttribute("fieldProductTime", fieldProductTime);
+        if (!formErrorMessage.checkAddProductFormValid(fieldProductName, fieldProductQuantity, fieldProductDescription,
+                fieldProductPrice, fieldProductTime)) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+            return "products/editProductPage";
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+            return "products/editProductPage";
+        }
+        productService.updateProductWithNewData(productId, productName, glazesType, description, price, quantity, time);
         return "redirect:/catalog";
     }
 
@@ -248,8 +313,28 @@ public class CatalogController {
 
     @PostMapping("/changeProductQuantity")
     public String editProductQuantity(HttpServletRequest request, Model model,
-                                      @RequestParam("id") int productId,
-                                      @RequestParam("quantity") int quantity) {
+                                      @RequestParam("id") int productId) {
+        int quantity = -1;
+        try {
+            String number = request.getParameter("quantity");
+            quantity = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            model.addAttribute("glazesType", glazesTypeService.returnAllGlazesType());
+        }
+        String fieldProductQuantity = formErrorMessage.checkFieldProductQuantity("quantity", quantity);
+        model.addAttribute("fieldProductQuantity", fieldProductQuantity);
+        if (!formErrorMessage.checkChangeQuantityProductFormValid(fieldProductQuantity)) {
+            Product product = productService.returnProductById(productId);
+            model.addAttribute("product", product);
+            Map<Integer, Integer> orderedQuantity = new HashMap<>();
+            if (productService.returnOrderedProductQuantity(product.getId(), 1) == null) {
+                orderedQuantity.put(product.getId(), 0);
+            } else {
+                orderedQuantity.put(product.getId(), productService.returnOrderedProductQuantity(product.getId(), 1));
+            }
+            model.addAttribute("orderedQuantity", orderedQuantity);
+            return "products/changeProductQuantity";
+        }
         productService.updateProductQuantityWithPlacedOrder(productId, quantity);
         return "redirect:/catalog";
     }

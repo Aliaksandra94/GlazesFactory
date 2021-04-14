@@ -64,14 +64,15 @@
             }
         </script>
         <br>
+
         <sec:authorize access="isAuthenticated() && hasAnyRole('ADMIN', 'PRODUCER')">
             <form:label path="description"><spring:message code="productDescription.addProduct"/></form:label>
             <form:input path="description"/>
-            <form:errors path="description" cssClass="error"/>
+            <div style="color: red">${fieldProductDescription}</div>
 
             <form:label path="price"><spring:message code="productPrice.addProduct"/></form:label>
             <form:input path="price"/>
-            <form:errors path="price" cssClass="error"/>
+            <div style="color: red">${fieldProductPrice}</div>
 
         </sec:authorize>
         <form:label path="quantity"><spring:message code="productQuantity.addProduct"/></form:label>
@@ -81,7 +82,7 @@
         <sec:authorize access="isAuthenticated() && hasAnyRole('ADMIN', 'PRODUCER')">
             <form:label path="productionTime"><spring:message code="productTimeProduction.addProduct"/></form:label>
             <form:input path="productionTime"/>
-            <form:errors path="productionTime" cssClass="error"/>
+            <div style="color: red">${fieldProductTime}</div>
 
             <spring:message code="actionWithProduct.addProduct" var="add"/>
         </sec:authorize>

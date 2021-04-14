@@ -22,7 +22,7 @@
 
         <form:label path="quantity"><spring:message code="productQuantity.catalogPage"/></form:label>
         <form:input path="quantity"/>
-        <form:errors path="quantity" cssClass="error"/>
+        <div style="color: red">${fieldProductQuantity}</div>
 
         <spring:message code="actionWithProduct.editProduct" var="edit"/>
         <input type="submit" value="${edit}">

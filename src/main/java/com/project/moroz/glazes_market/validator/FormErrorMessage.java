@@ -115,6 +115,36 @@ public class FormErrorMessage {
         return errorMessage;
     }
 
+    public String checkFieldProductDescription(String parameter) {
+        String errorMessage = null;
+        if (parameter.equals("") || parameter == null) {
+            errorMessage = messageSource.getMessage("error.emptyFieldDescription", new Object[]{"error.emptyFieldDescription"}, LocaleContextHolder.getLocale());
+        } else if (parameter.toCharArray().length <= 2 || parameter.toCharArray().length >= 101) {
+            errorMessage = messageSource.getMessage("error.sizeProductDescription", new Object[]{"error.sizeProductDescription"}, LocaleContextHolder.getLocale());
+        }
+        return errorMessage;
+    }
+
+    public String checkFieldProductPrice(String parameter, double price) {
+        String errorMessage = null;
+        if (parameter.equals("") || parameter == null) {
+            errorMessage = messageSource.getMessage("error.emptyPrice", new Object[]{"error.emptyPrice"}, LocaleContextHolder.getLocale());
+        } else if (price <= 0) {
+            errorMessage = messageSource.getMessage("error.wrongDoubleType", new Object[]{"error.wrongDoubleType"}, LocaleContextHolder.getLocale());
+        }
+        return errorMessage;
+    }
+
+    public String checkFieldProductTimeOfProduction(String parameter, int time) {
+        String errorMessage = null;
+        if (parameter.equals("") || parameter == null) {
+            errorMessage = messageSource.getMessage("error.emptyFieldTime", new Object[]{"error.emptyFieldTime"}, LocaleContextHolder.getLocale());
+        } else if (time <= 0) {
+            errorMessage = messageSource.getMessage("error.wrongType", new Object[]{"error.wrongType"}, LocaleContextHolder.getLocale());
+        }
+        return errorMessage;
+    }
+
     public boolean checkCreateProductFormValid(String error1, String error2) {
         boolean isValid;
         if ((error1 == null || error1.equals("")) && (error2 == null || error2.equals(""))) {
@@ -124,5 +154,23 @@ public class FormErrorMessage {
         }
         return isValid;
     }
-
+    public boolean checkAddProductFormValid(String error1, String error2, String error3, String error4, String error5) {
+        boolean isValid;
+        if ((error1 == null || error1.equals("")) && (error2 == null || error2.equals("")) &&
+                (error3 == null || error3.equals("")) && (error4 == null || error4.equals("")) &&(error5 == null || error5.equals("")) ) {
+            isValid = true;
+        } else {
+            isValid = false;
+        }
+        return isValid;
+    }
+    public boolean checkChangeQuantityProductFormValid(String error1) {
+        boolean isValid;
+        if ((error1 == null || error1.equals(""))) {
+            isValid = true;
+        } else {
+            isValid = false;
+        }
+        return isValid;
+    }
 }
