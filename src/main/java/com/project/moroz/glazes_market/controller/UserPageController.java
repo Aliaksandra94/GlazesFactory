@@ -3,6 +3,7 @@ package com.project.moroz.glazes_market.controller;
 import com.project.moroz.glazes_market.entity.*;
 import com.project.moroz.glazes_market.service.interfaces.*;
 import com.project.moroz.glazes_market.utils.Utils;
+import com.project.moroz.glazes_market.validator.FormErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -31,6 +33,12 @@ public class UserPageController {
     private GlazesTypeService glazesTypeService;
     private RawMaterialService rawMaterialService;
     private MessageSource messageSource;
+    private FormErrorMessage formErrorMessage;
+
+    @Autowired
+    public void setFormErrorMessage(FormErrorMessage formErrorMessage) {
+        this.formErrorMessage = formErrorMessage;
+    }
 
     @Autowired
     public void setMessageSource(MessageSource messageSource) {
@@ -309,7 +317,7 @@ public class UserPageController {
 
     @PostMapping("/edit")
     public String editPersonalUsersData(HttpServletRequest request, Model
-            model, @ModelAttribute("user") @Valid User user,
+            model, @ModelAttribute("user") User user,
                                         BindingResult bindingResult,
                                         @ModelAttribute("manager") @Valid Manager manager,
                                         @RequestParam("id") int userId,
@@ -319,9 +327,29 @@ public class UserPageController {
                                         @RequestParam("email") String email,
                                         @RequestParam("discount") double discount,
                                         @RequestParam("manager.name") String managerId,
-                                        @RequestParam("solvency.name") String solvencyId) {
+                                        @RequestParam("solvency.name") String solvencyId, RedirectAttributes redirectAttributes) {
         model.addAttribute("user", user);
+        if (userService.isLoginAlreadyInUse(user.getLogin()) && !(user.getLogin().equals(userService.returnUserById(userId).getLogin()))) {
+            String errorMessage = messageSource.getMessage("duplicate.customerForm.name", new Object[]{"duplicate.customerForm.name"}, LocaleContextHolder.getLocale());
+            bindingResult.rejectValue("login", "duplicate.customerForm.name", errorMessage);
+        }
+        String fieldNameError = formErrorMessage.checkFieldName(request.getParameter("name"));
+        model.addAttribute("fieldNameError", fieldNameError);
+        String fieldLoginError = formErrorMessage.checkFieldLogin(request.getParameter("login"));
+        model.addAttribute("fieldLoginError", fieldLoginError);
+        String fieldPassError = formErrorMessage.checkFieldPassForPersonalEdit(request.getParameter("password"));
+        model.addAttribute("fieldPassError", fieldPassError);
+        if (!formErrorMessage.checkFormValid(fieldNameError,fieldLoginError, fieldPassError)){
+            model.addAttribute("managers", managerService.returnManagersByRoleId(2));
+            model.addAttribute("solvencies", solvencyService.returnAllSolvencies());
+            return "users/editUserPage";
+        }
         if (bindingResult.hasErrors()) {
+            redirectAttributes.getFlashAttributes().clear();
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.manager", bindingResult);
+            redirectAttributes.addFlashAttribute("user", user);
+            model.addAttribute("managers", managerService.returnManagersByRoleId(2));
+            model.addAttribute("solvencies", solvencyService.returnAllSolvencies());
             return "users/editUserPage";
         }
         Manager manager1 = managerService.returnManagerByName(managerId);
@@ -332,13 +360,28 @@ public class UserPageController {
 
     @PostMapping("/editManager")
     public String editPersonalManagersData(HttpServletRequest request, Model
-            model, @ModelAttribute("manager") @Valid Manager manager,
-                                           BindingResult bindingResult,
+            model, @ModelAttribute("manager") Manager manager, BindingResult bindingResult,
                                            @RequestParam("id") int managerId,
                                            @RequestParam("name") String name,
                                            @RequestParam("login") String login,
-                                           @RequestParam("password") String password) {
+                                           @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
+            if (managerService.isLoginAlreadyInUse(manager.getLogin()) && !(manager.getLogin().equals(managerService.returnManagerById(managerId).getLogin()))) {
+                String errorMessage = messageSource.getMessage("duplicate.customerForm.name", new Object[]{"duplicate.customerForm.name"}, LocaleContextHolder.getLocale());
+                bindingResult.rejectValue("login", "duplicate.customerForm.name", errorMessage);
+            }
+        String fieldNameError = formErrorMessage.checkFieldName(request.getParameter("name"));
+        model.addAttribute("fieldNameError", fieldNameError);
+        String fieldLoginError = formErrorMessage.checkFieldLogin(request.getParameter("login"));
+        model.addAttribute("fieldLoginError", fieldLoginError);
+        String fieldPassError = formErrorMessage.checkFieldPassForPersonalEdit(request.getParameter("password"));
+        model.addAttribute("fieldPassError", fieldPassError);
+        if (!formErrorMessage.checkFormValid(fieldNameError,fieldLoginError, fieldPassError)){
+            return "managers/editManagerPage";
+        }
         if (bindingResult.hasErrors()) {
+            redirectAttributes.getFlashAttributes().clear();
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.manager", bindingResult);
+            redirectAttributes.addFlashAttribute("manager", manager);
             return "managers/editManagerPage";
         }
         Manager manager1 = managerService.returnManagerById(managerId);

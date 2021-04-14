@@ -6,6 +6,7 @@ import com.project.moroz.glazes_market.service.interfaces.ManagerService;
 import com.project.moroz.glazes_market.service.interfaces.OrderService;
 import com.project.moroz.glazes_market.service.interfaces.RoleService;
 import com.project.moroz.glazes_market.utils.Utils;
+import com.project.moroz.glazes_market.validator.FormErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -25,7 +26,12 @@ public class ManagersController {
     private ManagerService managerService;
     private RoleService roleService;
     private MessageSource messageSource;
+    private FormErrorMessage formErrorMessage;
 
+    @Autowired
+    public void setFormErrorMessage(FormErrorMessage formErrorMessage) {
+        this.formErrorMessage = formErrorMessage;
+    }
     @Autowired
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
@@ -57,14 +63,24 @@ public class ManagersController {
     }
 
     @PostMapping("/add")
-    public String addManager(Model model,
+    public String addManager(HttpServletRequest request, Model model,
                              @RequestParam(value = "roleId") int roleID,
-                             @ModelAttribute("manager") @Valid Manager manager,
+                             @ModelAttribute("manager") Manager manager,
                              BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         model.addAttribute("manager", manager);
         if (managerService.isLoginAlreadyInUse(manager.getLogin())) {
             String errorMessage = messageSource.getMessage("duplicate.customerForm.name", new Object[]{"duplicate.customerForm.name"}, LocaleContextHolder.getLocale());
             bindingResult.rejectValue("login", "duplicate.customerForm.name", errorMessage);
+        }
+        String fieldNameError = formErrorMessage.checkFieldName(request.getParameter("name"));
+        model.addAttribute("fieldNameError", fieldNameError);
+        String fieldLoginError = formErrorMessage.checkFieldLogin(request.getParameter("login"));
+        model.addAttribute("fieldLoginError", fieldLoginError);
+        String fieldPassError = formErrorMessage.checkFieldPass(request.getParameter("password"));
+        model.addAttribute("fieldPassError", fieldPassError);
+        if (!formErrorMessage.checkFormValid(fieldNameError,fieldLoginError, fieldPassError)){
+            model.addAttribute("roles", roleService.returnAllRoles());
+            return "managers/addManagerPage";
         }
         if (bindingResult.hasErrors()) {
             model.addAttribute("manager", manager);
@@ -99,13 +115,29 @@ public class ManagersController {
 
     @PostMapping("/edit")
     public String editManagerData(HttpServletRequest request, Model
-            model, @ModelAttribute("manager") @Valid Manager manager,
+            model, @ModelAttribute("manager") Manager manager,
                                   BindingResult bindingResult,
                                   @RequestParam("id") int managerId,
                                   @RequestParam("name") String name,
                                   @RequestParam("login") String login,
-                                  @RequestParam("password") String password) {
+                                  @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
+        if (managerService.isLoginAlreadyInUse(manager.getLogin()) && !(manager.getLogin().equals(managerService.returnManagerById(managerId).getLogin()))) {
+            String errorMessage = messageSource.getMessage("duplicate.customerForm.name", new Object[]{"duplicate.customerForm.name"}, LocaleContextHolder.getLocale());
+            bindingResult.rejectValue("login", "duplicate.customerForm.name", errorMessage);
+        }
+        String fieldNameError = formErrorMessage.checkFieldName(request.getParameter("name"));
+        model.addAttribute("fieldNameError", fieldNameError);
+        String fieldLoginError = formErrorMessage.checkFieldLogin(request.getParameter("login"));
+        model.addAttribute("fieldLoginError", fieldLoginError);
+        String fieldPassError = formErrorMessage.checkFieldPass(request.getParameter("password"));
+        model.addAttribute("fieldPassError", fieldPassError);
+        if (!formErrorMessage.checkFormValid(fieldNameError,fieldLoginError, fieldPassError)){
+            return "managers/editManagerPage";
+        }
         if (bindingResult.hasErrors()) {
+            redirectAttributes.getFlashAttributes().clear();
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.manager", bindingResult);
+            redirectAttributes.addFlashAttribute("manager", manager);
             return "managers/editManagerPage";
         }
         Manager manager1 = managerService.returnManagerById(managerId);

@@ -6,9 +6,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-
 @Component
 public class FormErrorMessage {
     private UserService userService;
@@ -41,7 +38,7 @@ public class FormErrorMessage {
         } else if (parameter.toCharArray().length <= 2 || parameter.toCharArray().length >= 15) {
             errorMessage = messageSource.getMessage("error.sizeUserLogin", new Object[]{"error.sizeUserLogin"}, LocaleContextHolder.getLocale());
         }
-//        else if (!userService.isUsernameUnique(parameter)){
+        //        else if (!userService.isUsernameUnique(parameter)){
 //            errorMessage = messageSource.getMessage("duplicate.customerForm.name", new Object[]{"duplicate.customerForm.name"}, LocaleContextHolder.getLocale());
 //        }
         return errorMessage;
@@ -57,9 +54,40 @@ public class FormErrorMessage {
         return errorMessage;
     }
 
+    public String checkFieldPassForPersonalEdit(String parameter) {
+        String errorMessage = null;
+        if (parameter.equals("") || parameter == null) {
+            errorMessage = messageSource.getMessage("error.emptyUserPass", new Object[]{"error.emptyUserPass"}, LocaleContextHolder.getLocale());
+        } else if (parameter.toCharArray().length <= 4) {
+            errorMessage = messageSource.getMessage("error.sizeUserPass", new Object[]{"error.sizeUserPass"}, LocaleContextHolder.getLocale());
+        }
+        return errorMessage;
+    }
+
+    public String checkFieldDiscount(String parameter, double number) {
+        String errorMessage = null;
+        if (parameter.equals("") || parameter == null) {
+            errorMessage = messageSource.getMessage("error.emptyDiscount", new Object[]{"error.emptyDiscount"}, LocaleContextHolder.getLocale());
+        } else if (number <= 0) {
+            errorMessage = messageSource.getMessage("error.wrongDoubleType", new Object[]{"error.wrongDoubleType"}, LocaleContextHolder.getLocale());
+        }
+        return errorMessage;
+    }
+
     public boolean checkFormValid(String error1, String error2, String error3) {
         boolean isValid;
         if ((error1 == null || error1.equals("")) && (error2 == null || error2.equals("")) && (error3 == null || error3.equals(""))) {
+            isValid = true;
+        } else {
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    public boolean checkAddUserFormValid(String error1, String error2, String error3, String error4) {
+        boolean isValid;
+        if ((error1 == null || error1.equals("")) && (error2 == null || error2.equals("")) && (error3 == null || error3.equals(""))
+                && (error4 == null || error4.equals(""))) {
             isValid = true;
         } else {
             isValid = false;
@@ -81,7 +109,7 @@ public class FormErrorMessage {
         String errorMessage = null;
         if (parameter.equals("") || parameter == null) {
             errorMessage = messageSource.getMessage("error.emptyQuantity", new Object[]{"error.emptyQuantity"}, LocaleContextHolder.getLocale());
-        } else if (number <= 0){
+        } else if (number <= 0) {
             errorMessage = messageSource.getMessage("error.wrongType", new Object[]{"error.wrongType"}, LocaleContextHolder.getLocale());
         }
         return errorMessage;

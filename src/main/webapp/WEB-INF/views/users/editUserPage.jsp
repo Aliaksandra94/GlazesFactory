@@ -18,15 +18,16 @@
         <input type="hidden" name="id" value="${user.id}">
         <form:label path="name"><spring:message code="name.registrationPage"/></form:label>
         <form:input path="name"/>
-        <form:errors path="name" cssClass="error"/>
+        <div align="center" style="color: #fa0404">${fieldNameError}</div>
 
         <form:label path="login"><spring:message code="login.registrationPage"/></form:label>
         <form:input path="login"/>
         <form:errors path="login" cssClass="error"/>
+        <div align="center" style="color: #fa0404">${fieldLoginError}</div>
 
         <form:label path="password"><spring:message code="password.registrationPage"/></form:label>
         <form:input path="password"/>
-        <form:errors path="password" cssClass="error"/>
+        <div align="center" style="color: #fa0404">${fieldPassError}</div>
 
         <form:label path="email"><spring:message code="email.registrationPage"/></form:label>
         <form:input path="email"/>
@@ -42,7 +43,7 @@
         <sec:authorize access="hasRole('ADMIN') || hasRole('SELLER')">
             <form:label path="discount"><spring:message code="userDiscount.usersPage"/></form:label>
             <form:input path="discount"/>
-            <form:errors path="discount" cssClass="error"/>
+            <div align="center" style="color: #fa0404">${fieldDiscError}</div>
         </sec:authorize>
 
         <sec:authorize access="hasRole('USER')">

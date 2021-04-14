@@ -1,6 +1,6 @@
 #FileLock
-#Tue Apr 13 23:54:35 MSK 2021
+#Wed Apr 14 03:40:50 MSK 2021
 hostName=Computer
-id=178cd03ab6b10f61d0b1bb28dcd8c754a6aaed61359
+id=178cdd2cfc1552acc9ec817ce2d4936a0a4ba6760fd
 method=file
-server=192.168.100.20\:62369
+server=192.168.100.20\:65116
