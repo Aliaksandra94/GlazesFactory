@@ -337,17 +337,15 @@ public class UserServiceImpl implements UserService {
         List<User> users = new ArrayList<>();
         if (returnUserByLoginIgnoreCase(field) != null) {
             users.add(returnUserByLoginIgnoreCase(field));
+        }
+        if (isUsernameUnique(field)) {
+            if (returnUserByNameIgnoreCase(field) != null) {
+                users.add(returnUserByNameIgnoreCase(field));
+            }
         } else {
-            if (isUsernameUnique(field)) {
-                if (returnUserByNameIgnoreCase(field) != null) {
-                    users.add(returnUserByNameIgnoreCase(field));
-                }
-            } else {
-                if (returnUsersByNameIgnoreCase(field) != null) {
-                    for (User user : returnUsersByNameIgnoreCase(field)) {
-                        users.add(user);
-                    }
-                }
+            if (returnUsersByNameIgnoreCase(field) != null) {
+                Iterator<User> iterator = returnUsersByNameIgnoreCase(field).iterator();
+                iterator.forEachRemaining(s -> users.add(s));
             }
         }
         return users;
@@ -379,7 +377,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public double getOrdersAmount(List<Order> orders) {
         double total = 0;
-        for (Order order:orders){
+        for (Order order : orders) {
             total += order.getAmount();
         }
         return total;

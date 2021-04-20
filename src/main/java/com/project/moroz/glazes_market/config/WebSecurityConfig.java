@@ -28,9 +28,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/", "/info/**", "/locale/**", "/registration", "/catalog",
                         "/contacts/**", "authorization", "products", "/resources/**", "/h2/**", "/css/**",
-                        "/js/**", "/images/**", "/basket").permitAll()
-                .antMatchers("/catalog/**", "/reports/**", "/userPage/**").not().anonymous()
+                        "/js/**", "/images/**", "/basket/").permitAll()
                 .antMatchers("/basket", "/basket/**", "/catalog/create/**").hasRole("USER")
+                .antMatchers("/reports/**", "/userPage/**").not().anonymous()
                 .antMatchers("/basket", "/basket/**", "/catalog/create/**").not().hasAnyRole("SELLER", "ADMIN", "PURCHASER", "PRODUCER")
                 .antMatchers("/order/**").authenticated()
                 .antMatchers("/sendEmail/**").hasAnyRole("USER", "SELLER", "ADMIN" )
@@ -40,6 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/userPage/reports/**").not().hasRole("USER")
                 .antMatchers("/managers/**", "/userPage/reports/onManagers").hasRole("ADMIN")
                 .antMatchers("/userPage/reports/onClients").not().hasAnyRole("USER", "PURCHASER", "PRODUCER")
+                .antMatchers("/userPage/actionWithRawMaterial/**").hasAnyRole("ADMIN", "PURCHASER")
                 .antMatchers("/userPage/reports/onGlazesTypes", "/userPage/reports/onProducts", "/userPage/reports/onOrders").hasAnyRole("ADMIN", "SELLER", "PURCHASER", "PRODUCER")
                 .anyRequest()
                 .authenticated()
