@@ -59,8 +59,8 @@ public class OrderStageServiceImpl implements OrderStageService {
         Set<Role> roles = managerDAO.findByLogin(Utils.getUserInSession(request).getLogin()).getRoles();
         List<OrderStage> orderStages = new ArrayList<>();
         List<OrderItem> orderItems = order.getOrderItems();
+        int count = 0;
         for (OrderItem orderItem : orderItems) {
-            int count = 0;
             if (orderItem.getQuantity() >= orderItem.getProduct().getQuantity() && !role) {
                 for (Role roleForCheck : roles) {
                     if (roleForCheck.getId() == 1 || roleForCheck.getId() == 2) {
