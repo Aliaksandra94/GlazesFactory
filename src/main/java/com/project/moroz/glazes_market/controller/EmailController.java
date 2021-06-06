@@ -105,7 +105,7 @@ public class EmailController {
         MimeMessage message = mailSender.createMimeMessage();
         boolean multipart = true;
         MimeMessageHelper helper = new MimeMessageHelper(message, multipart, "utf-8");
-        String picture = TestEmailConstant.picture;
+        //String picture = TestEmailConstant.picture;
         String htmlMsg = null;
         if (user.getSolvency().equals(solvencyService.returnSolvencyByID(1))) {
             htmlMsg = "<h2> Good day, " + user.getName() + "! </h2>\n" +
@@ -121,7 +121,6 @@ public class EmailController {
                     "<br><br>" +
                     "To get more info, please, visit our web-site: <a href=\"http://localhost:8080\">Link</a>" +
                     "<br><br>" +
-                    picture +
                     "Thank you for choosing us!</h3>";
         } else if (user.getSolvency().equals(solvencyService.returnSolvencyByID(2))) {
             htmlMsg = "<h2> Good day, " + user.getName() + "! </h2>\n" +
